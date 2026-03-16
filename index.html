@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Editing Central — Orion Drift & Gorilla Tag Editing Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --accent1: #ff4b4b;
+      --accent2: #ff9b4b;
+      --bg1: #050509;
+      --bg2: #0a0a14;
+      --glass: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f2f2f7;
+      --muted: #9a9ab3;
+      --radius: 18px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", system-ui, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(140deg, #0a0a14, #050509, #0a0a14);
+      background-size: 300% 300%;
+      animation: bgMove 18s ease infinite;
+      color: var(--text);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* CURSOR GLOW */
+    .cursor-glow {
+      position: fixed;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 75, 75, 0.35), transparent 70%);
+      pointer-events: none;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      filter: blur(40px);
+      opacity: 0.7;
+      transition: left 0.08s linear, top 0.08s linear;
+    }
+
+    /* PARTICLES */
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: radial-gradient(circle, var(--accent2), var(--accent1));
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(0); opacity: 0.7; }
+      to { transform: translateY(-120vh); opacity: 0; }
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 20px 100px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 50px;
+      animation: fadeIn 1s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: conic-gradient(from 210deg, var(--accent1), var(--accent2), var(--accent1));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 22px;
+      color: #050509;
+      box-shadow: 0 0 40px rgba(255, 75, 75, 0.55);
+    }
+
+    .brand-title {
+      font-size: 26px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    nav {
+      display: flex;
+      gap: 26px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+    }
+
+    nav a:hover {
+      color: var(--accent2);
+      transform: translateY(-2px);
+      transition: 0.2s;
+    }
+
+    /* HERO */
+    .hero {
+      margin-bottom: 80px;
+      padding: 60px 40px;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+      animation: slideUp 1.2s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes slideUp {
+      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(40px); }
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(5, 5, 9, 0.7);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-size: 46px;
+      font-weight: 900;
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .hero-title span {
+      background: linear-gradient(120deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-sub {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 600px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 14px 26px;
+      border-radius: 999px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.25s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #050509;
+      border: none;
+      box-shadow: 0 0 30px rgba(255, 75, 75, 0.6);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.03);
+      filter: brightness(1.08);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent2);
+      color: var(--accent2);
+      transform: translateY(-3px);
+    }
+
+    /* SECTION TITLES */
+    .section-title {
+      font-size: 26px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 20px;
+      margin-top: 60px;
+    }
+
+    /* FEATURES GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 26px;
+      margin-top: 20px;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 26px 22px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+      animation: fadeIn 1.4s ease forwards;
+      opacity: 0;
+      transition: 0.3s;
+    }
+
+    .panel:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent2);
+      box-shadow: 0 20px 50px rgba(255, 75, 75, 0.25);
+    }
+
+    .panel-title {
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .panel ul {
+      list-style: none;
+      display: grid;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .panel ul li span {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* GAME SECTIONS */
+    .game-section {
+      margin-top: 80px;
+      padding: 40px;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+      transition: 0.3s;
+    }
+
+    .game-section:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent2);
+    }
+
+    .game-title {
+      font-size: 22px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+    }
+
+    .game-desc {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* SHOWCASE */
+    .showcase {
+      margin-top: 80px;
+    }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .showcase-item {
+      height: 160px;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      transition: 0.3s;
+    }
+
+    .showcase-item:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    /* CTA */
+    .cta {
+      margin-top: 100px;
+      padding: 50px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #050509;
+      text-align: center;
+      font-weight: 900;
+      font-size: 26px;
+      letter-spacing: 0.1em;
+      box-shadow: 0 0 40px rgba(255, 75, 75, 0.6);
+    }
+
+    .cta a button {
+      margin-top: 20px;
+      padding: 14px 26px;
+      border-radius: 999px;
+      border: none;
+      background: #050509;
+      color: var(--accent2);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    .cta a button:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.2);
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: 80px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .hero {
+        padding: 40px 24px;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      nav {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- CURSOR GLOW -->
+  <div class="cursor-glow"></div>
+
+  <!-- PARTICLES -->
+  <div class="particles"></div>
+
+  <div class="wrap">
+
+    <!-- HEADER -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon">EC</div>
+        <div>
+          <div class="brand-title">Editing Central</div>
+          <div class="brand-sub">Orion Drift · Gorilla Tag · VR Editing Hub</div>
+        </div>
+      </div>
+
+      <nav>
+        <a href="#features">Features</a>
+        <a href="#games">Games</a>
+        <a href="#showcase">Showcase</a>
+        <a href="#discord">Discord</a>
+        <a href="#join">Join</a>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-pill">VR Editing Community · Live</div>
+
+      <h1 class="hero-title">
+        The Hub for <span>Orion Drift</span> & <span>Gorilla Tag</span> Editors
+      </h1>
+
+      <p class="hero-sub">
+        Clean cuts. Cracked sync. Real feedback. Editing Central is built for creators who want to level up fast — without the noise, drama, or clutter.
+      </p>
+
+      <div class="hero-actions" id="join">
+        <a href="https://discord.gg/xHa9cMr9vD" target="_blank">
+          <button class="btn btn-primary">Join the Discord</button>
+        </a>
+        <a href="#features">
+          <button class="btn btn-ghost">Explore Features</button>
+        </a>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <h2 class="section-title" id="features">Server Layout</h2>
+    <section class="grid">
+      <div class="panel">
+        <div class="panel-title">General</div>
+        <ul>
+          <li><span>#question</span> — ask anything about editing or the server.</li>
+          <li><span>#suggestions</span> — ideas to improve Editing Central.</li>
+          <li><span>#introductions</span> — tell people who you are.</li>
+          <li><span>#self-promo</span> — share your socials and uploads.</li>
+          <li><span>#stage</span> — events, talks, and live stuff.</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Fun · Bots · Rank</div>
+        <ul>
+          <li><span>#edits</span> — drop finished edits for fun.</li>
+          <li><span>#bot-coms</span> — bot responses and spam lives here.</li>
+          <li><span>#cmds-for-bots</span> — run commands without cluttering chat.</li>
+          <li><span>#rank</span> — level and rank progress.</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Editing / Thumbnails</div>
+        <ul>
+          <li><span>#editing-chat</span> — talk about projects and workflows.</li>
+          <li><span>#editing-jobs</span> — find or post paid / free work.</li>
+          <li><span>#thumbnail-chat</span> — discuss thumbnail ideas and styles.</li>
+          <li><span>#thumbnail-tips</span> — advice for CTR and design.</li>
+          <li><span>#davinci-help · #capcut-help · #premiere-help · #thumbnail-help</span> — tool-specific help.</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Blender & Community</div>
+        <ul>
+          <li><span>#blender-help</span> — get unstuck on 3D problems.</li>
+          <li><span>#blender-chat</span> — talk Blender setups and scenes.</li>
+          <li><span>#blender-showoff</span> — flex your renders.</li>
+          <li><span>#blender-jobs</span> — 3D work offers.</li>
+          <li><span>#presets · #assets · #audios</span> — share and grab resources.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- GAME SECTIONS -->
+    <h2 class="section-title" id="games">Games We Support</h2>
+
+    <section class="game-section">
+      <div class="game-title">Orion Drift</div>
+      <p class="game-desc">
+        Speed, precision, and cinematic flow. Orion Drift editing is all about motion clarity, fast sync, and clean transitions.
+        Learn how to make your runs look smooth, readable, and hype without losing the game’s identity.
+      </p>
+    </section>
+
+    <section class="game-section">
+      <div class="game-title">Gorilla Tag</div>
+      <p class="game-desc">
+        Chaotic movement, jukes, routes, and high-energy clips.
+        Editing Central helps you turn raw GTag gameplay into clean, exciting edits that keep the viewer locked in.
+      </p>
+    </section>
+
+    <!-- DISCORD WIDGET (between Games and Showcase) -->
+    <h2 class="section-title" id="discord">Join the Community</h2>
+    <section class="game-section" style="display:flex;justify-content:center;align-items:center;">
+      <iframe
+        src="https://discord.com/widget?id=1477149636140728442&theme=dark"
+        width="350"
+        height="500"
+        allowtransparency="true"
+        frameborder="0"
+        sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+        style="border-radius: var(--radius); box-shadow: 0 0 40px rgba(255,75,75,0.35);">
+      </iframe>
+    </section>
+
+    <!-- SHOWCASE -->
+    <h2 class="section-title" id="showcase">Showcase</h2>
+    <section class="showcase">
+      <div class="showcase-grid">
+        <div class="showcase-item">Editor Highlights</div>
+        <div class="showcase-item">Clip Packs</div>
+        <div class="showcase-item">Preset Drops</div>
+        <div class="showcase-item">Community Edits</div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+      Editing Central · Orion Drift & Gorilla Tag Editors
+      <br />
+      <a href="https://discord.gg/xHa9cMr9vD" target="_blank">
+        <button>Join Now</button>
+      </a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div>© <span id="year"></span> Editing Central</div>
+      <div>Orion Drift & Gorilla Tag Editing Hub</div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Particles
+    const container = document.querySelector(".particles");
+    for (let i = 0; i < 40; i++) {
+      const p = document.createElement("div");
+      p.classList.add("particle");
+      p.style.left = Math.random() * 100 + "vw";
+      p.style.top = Math.random() * 100 + "vh";
+      p.style.animationDuration = 6 + Math.random() * 6 + "s";
+      p.style.opacity = 0.3 + Math.random() * 0.5;
+      container.appendChild(p);
+    }
+
+    // Mouse-tracking glow (centered on cursor)
+    const glow = document.querySelector(".cursor-glow");
+    window.addEventListener("mousemove", (e) => {
+      glow.style.left = e.clientX + "px";
+      glow.style.top = e.clientY + "px";
+    });
+  </script>
+
+</body>
+</html>
